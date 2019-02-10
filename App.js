@@ -1,182 +1,55 @@
-import React from 'react';
-import { StyleSheet, Text, View, Button, TouchableOpacity, Dimensions } from 'react-native';
-import { createAppContainer, createStackNavigator, StackActions, NavigationActions } from 'react-navigation';
-import { KeyboardAvoidingView } from 'react-native';
-import { Camera, Permissions } from 'expo';
+import React, { Component } from 'react';
+import {
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+  StatusBar
+} from 'react-native';
 
-class HomeScreen extends React.Component {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.titleApp}>RealityCheck</Text>
-        <Button
-          title="Je crois que je suis réel"
-          onPress={() => {
-            this.props.navigation.dispatch(StackActions.reset({
-            index: 0,
-            actions: [
-            NavigationActions.navigate({ routeName: 'Details' })
-                  ],
-                }))
-              }}
-          />
-      </View>
-    );
-  }
-}
+import {
+  createStackNavigator,
+  createAppContainer,
+  defaultNavigationOptions
+        } from 'react-navigation';
 
-class DetailsScreen extends React.Component {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.titleApp}>Choisissez votre personnage</Text>
-          <Button
-          title="Je suis le joueur A"
-          onPress={() => {
-          this.props.navigation.dispatch(StackActions.reset({
-          index: 0,
-          actions: [
-          NavigationActions.navigate({ routeName: 'JoueurA' })
-                ],
-              }))
-            }}
-        />
-        <Button
-        title="Je suis le joueur B"
-        onPress={() => {
-        this.props.navigation.dispatch(StackActions.reset({
-        index: 0,
-        actions: [
-        NavigationActions.navigate({ routeName: 'JoueurB' })
-              ],
-            }))
-          }}
-      />
+import Enter from './screens/Enter';
+import Choice from './screens/Choice';
+import Artificial from './screens/Artificial';
+import Real from './screens/Real';
+import DashboardArtificial from './screens/DashboardArtificial';
+import DashboardReal from './screens/DashboardReal';
 
-      </View>
-    );
-  }
-}
+console.ignoredYellowBox = ['Remote debugger'];
+import { YellowBox } from 'react-native';
+YellowBox.ignoreWarnings([
+    'Unrecognized WebSocket connection option(s) `agent`, `perMessageDeflate`, `pfx`, `key`, `passphrase`, `cert`, `ca`, `ciphers`, `rejectUnauthorized`. Did you mean to put these under `headers`?'
+]);
 
 
-class JoueurAScreen extends React.Component {
-  render() {
-    return (
-      <View style={styles.terminalIndication}>
-        <Text style={styles.introduction}>RealityCheck V.1.0 (2019-01-27)
-Première connexion : 17/01/19 - 14:30:56
-{"\n"}{"\n"}
-RC est un logiciel gratuit sans AUCUNE GARANTIE quant à l’utilisation qu’il peut en être faite par les joueurs.
-{"\n"}{"\n"}
-RC est un jeu collaboratif avec beaucoup de contributeurs — dont vous. Pour plus d’informations tapez ‘info’ et pour connaître la liste des contributeurs tapez ‘scoreboard’.
-{"\n"}{"\n"}
-Pour commencer un RealityCheck tapez ‘demo’ ou ‘start’.
-        </Text>
-      </View>
-    );
-  }
-}
 
-class JoueurBScreen extends React.Component {
-  state = {
-      hasCameraPermission: null,
-      type: Camera.Constants.Type.back,
-    };
+class MyComponent extends Component {
 
-    async componentDidMount() {
-      const { status } = await Permissions.askAsync(Permissions.CAMERA);
-      this.setState({ hasCameraPermission: status === 'granted' });
+
+
+    componentWillUnmount() {
+       StatusBar.setHidden(true);
     }
-
-    render() {
-      <View style={styles.playerInstruction}>
-        <Text>Scannez le plus d'objet pour prouver que vous êtes dans le monde réel !</Text>
-        <Text>Trouvez un <a>tabouret</a></Text>
-      </View>
-      const { hasCameraPermission } = this.state;
-      if (hasCameraPermission === null) {
-        return <View />;
-      } else if (hasCameraPermission === false) {
-        return <Text>No access to camera</Text>;
-      } else {
-        return (
-          <View style={{ flex: 1 }}>
-            <Camera style={{ flex: 1 }} type={this.state.type}>
-              <View
-                style={{
-                  flex: 1,
-                  backgroundColor: 'transparent',
-                  flexDirection: 'row',
-                }}>
-                <TouchableOpacity
-                  style={{
-                    flex: 0.1,
-                    alignSelf: 'flex-end',
-                    alignItems: 'center',
-                  }}
-                  onPress={() => {
-                    this.setState({
-                      type: this.state.type === Camera.Constants.Type.back
-                        ? Camera.Constants.Type.front
-                        : Camera.Constants.Type.back,
-                    });
-                  }}>
-                  <Text
-                    style={{ fontSize: 18, marginBottom: 10, color: 'white' }}>
-                    {' '}Flip{' '}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </Camera>
-          </View>
-        );
-      }
-    };
-  }
-
-
+}
 
 const AppNavigator = createStackNavigator({
-  Home: {
-    screen: HomeScreen,
-  },
-  Details: {
-    screen: DetailsScreen,
-  },
-  JoueurA: {
-    screen: JoueurAScreen,
-  },
-  JoueurB: {
-    screen: JoueurBScreen,
-  },
-}, {
-    initialRouteName: 'Home',
-});
+  EnterScreen: { screen: Enter },
+  ChoiceScreen: { screen: Choice },
+  ArtificialScreen: { screen: Artificial},
+  RealScreen: { screen: Real},
+  DashboardArtificialScreen: { screen: DashboardArtificial},
+  DashboardRealScreen: {screen: DashboardReal}
+},  { defaultNavigationOptions: {
+      header: null
+    },
+}
+);
 
-export default createAppContainer(AppNavigator);
+const App = createAppContainer(AppNavigator);
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000000',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  titleApp:{
-    color: '#fff',
-    fontSize: 32
-  },
-  captchaCheck:{
-    color:'#acacac',
-    marginTop:20,
-    fontSize:18
-  },
-  terminalIndication: {
-    backgroundColor: '#000',
-  },
-  introduction: {
-    color: '#fff',
-    margin: 10
-  }
-
-});
+export default App;
